@@ -65,62 +65,47 @@ class LoginController extends Controller
 
         // User::create($request->all());
 
-        $ldap = self::authenticate($server,$basedn,$domain,$username,$password);
-        // try {
-            if($ldap[0]){
-                $name = $ldap[1]['description'];
-                $email = $ldap[1]['mail'];
-                    // dd(
-                    //     $ldap[1]['accountname'], //username
-                    //     $ldap[1]['personid'], //
-                    //     $ldap[1]['citizenid'], //บัตรประชาชน
-                    //     $ldap[1]['cn'], //
-                    //     $ldap[1]['dn'], //
-                    //     $ldap[1]['campus'], //วิทยาเขต
-                    //     $ldap[1]['campusid'], //รหัสวิทยาเขต
-                    //     $ldap[1]['department'], //หน่วยงาน
-                    //     $ldap[1]['departmentid'], //รหัสหน่วยงาน
-                    //     $ldap[1]['workdetail'], //สังกัด
-                    //     $ldap[1]['positionid'], //
-                    //     $ldap[1]['description'], //ชื่อ THA
-                    //     $ldap[1]['displayname'], //ชื่อ ENG
-                    //     $ldap[1]['detail'], //ตำแหน่ง
-                    //     $ldap[1]['title'], //คำนำหน้าชื่อ
-                    //     $ldap[1]['titleid'],
-                    //     $ldap[1]['firstname'],
-                    //     $ldap[1]['lastname'],
-                    //     $ldap[1]['sex'],
-                    //     $ldap[1]['mail'],
-                    //     $ldap[1]['othermail']
-                    // );
+        // $ldap = self::authenticate($server,$basedn,$domain,$username,$password);
+        // // try {
+        //     if($ldap[0]){
+        //         $name = $ldap[1]['description'];
+        //         $email = $ldap[1]['mail'];
+        //             // dd(
+        //             //     $ldap[1]['accountname'], //username
+        //             //     $ldap[1]['personid'], //
+        //             //     $ldap[1]['citizenid'], //บัตรประชาชน
+        //             //     $ldap[1]['cn'], //
+        //             //     $ldap[1]['dn'], //
+        //             //     $ldap[1]['campus'], //วิทยาเขต
+        //             //     $ldap[1]['campusid'], //รหัสวิทยาเขต
+        //             //     $ldap[1]['department'], //หน่วยงาน
+        //             //     $ldap[1]['departmentid'], //รหัสหน่วยงาน
+        //             //     $ldap[1]['workdetail'], //สังกัด
+        //             //     $ldap[1]['positionid'], //
+        //             //     $ldap[1]['description'], //ชื่อ THA
+        //             //     $ldap[1]['displayname'], //ชื่อ ENG
+        //             //     $ldap[1]['detail'], //ตำแหน่ง
+        //             //     $ldap[1]['title'], //คำนำหน้าชื่อ
+        //             //     $ldap[1]['titleid'],
+        //             //     $ldap[1]['firstname'],
+        //             //     $ldap[1]['lastname'],
+        //             //     $ldap[1]['sex'],
+        //             //     $ldap[1]['mail'], //PSU Mail
+        //             //     $ldap[1]['othermail']
+        //             // );
 
-                    $users = DB::table('users')->where('username', '=', $username)->get();
-                    if (User::where('username', '=', $username)->count() > 0) 
-                    {
-                        // user found
-                        // dd($users);
-                    }
-                    else
-                    {
-                        DB::insert('insert into users(name, fullname, email, username, password, remember_token, created_at , updated_at , role_id) 
-                        values(?,?,?,?,?,?,?,?,?)',array('User', $name, $email, $username, Hash::make($password), null, now(), now(), '2'));
-                    }
-                    // if(isEmpty($users))
-                    // {
-                    //     dd($users);
-                    //     DB::insert('insert into users(name, fullname, email, username, password, remember_token, created_at , updated_at , role_id) 
-                    //     values(?,?,?,?,?,?,?,?,?)',array('User', $name, $email, $username, Hash::make($password), null, now(), now(), '2'));
-                    // }
-                    // foreach ($users as $user) {
-                    //     // dd($user->username);
-                    //     if($user->username == null)
-                    //     {
-                    //         DB::insert('insert into users(name, fullname, email, username, password, remember_token, created_at , updated_at , role_id) 
-                    //         values(?,?,?,?,?,?,?,?,?)',array('User', $name, $email, $username, Hash::make($password), null, now(), now(), '2'));
-                    //     }
-                    // }
-    
-            }
+        //             $users = DB::table('users')->where('username', '=', $username)->get();
+        //             if (User::where('username', '=', $username)->count() > 0) 
+        //             {
+        //                 // user found
+        //                 // dd($users);
+        //             }
+        //             else
+        //             {
+        //                 DB::insert('insert into users(name, fullname, email, username, password, remember_token, created_at , updated_at , role_id) 
+        //                 values(?,?,?,?,?,?,?,?,?)',array('User', $name, $email, $username, Hash::make($password), null, now(), now(), '2'));
+        //             }
+        //     }
         // } catch (Throwable $e) {
         //     // report($e);
         //     abort(403, 'Unauthorized action.');

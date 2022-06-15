@@ -78,12 +78,12 @@ class BookingsController extends Controller
         {
             foreach ($bookings as $booking) {
                 // $zooms = DB::table('zooms')->where('zoom_email','!=',$booking->zoom_email)->get(); //เช็ค Email ที่มีการจองแล้ว
-                $zooms = DB::select("SELECT zoom_email FROM zooms WHERE zoom_email NOT IN (SELECT zoom_email FROM bookings)");
+                $zooms = DB::select("SELECT zoom_email FROM zooms WHERE zoom_email NOT IN (SELECT zoom_email FROM bookings) AND category_id = '1'");
             }
         }
         else
         {
-            $zooms = DB::table('zooms')->get();
+            $zooms = DB::table('zooms')->where('category_id','=','1')->get();
         }
 
         return view('admin.bookings.create', compact('customers', 'zooms'));
@@ -108,7 +108,8 @@ class BookingsController extends Controller
         $time_to = $request->input('time_to');
         $additional_information = $request->input('additional_information');
         $user_name = $request->input('user_name');
-        $status_approve = 'ไม่อนุมัติ';
+        // $status_approve = 'ไม่อนุมัติ';
+        $status_approve = 'อนุมัติ';
 
         $bookings = DB::table('bookings')->get();
 
@@ -122,6 +123,15 @@ class BookingsController extends Controller
             }
 
             DB::insert('insert into bookings(time_from, time_to, additional_information, created_at, updated_at, deleted_at, customer_id, zoom_id, user_name, status_approve, zoom_number, zoom_email) values(?,?,?,?,?,?,?,?,?,?,?,?)',array($time_from,$time_to,$additional_information,now(),null,null,$customer_id,$zoom_id,$user_name,$status_approve,$zoom_number,$zoom_email));
+        
+            if($status_approve == 'อนุมัติ')
+            {
+                DB::table('zooms')->where('zoom_number','=',$zoom_number)->update(array(
+                    'category_id'=>2,
+                ));
+            }
+
+            app('App\Http\Controllers\MailController')->txt_mail($user_name); //เรียก function จาก controller อื่น
             return redirect()->back()->with('booked', 'บันทึกสำเร็จ'); //แจ้งเตือน sweetalert
         }
         else
@@ -170,11 +180,19 @@ class BookingsController extends Controller
         
                     DB::insert('insert into bookings(time_from, time_to, additional_information, created_at, updated_at, deleted_at, customer_id, zoom_id, user_name, status_approve, zoom_number, zoom_email) values(?,?,?,?,?,?,?,?,?,?,?,?)',array($time_from,$time_to,$additional_information,now(),null,null,$customer_id,$zoom_id,$user_name,$status_approve,$zoom_number,$zoom_email));
                     // return redirect()->back()->with('success', 'บันทึกสำเร็จ');
+                    if($status_approve == 'อนุมัติ')
+                    {
+                        DB::table('zooms')->where('zoom_number','=',$zoom_number)->update(array(
+                            'category_id'=>2,
+                        ));
+                    }
+                    
+                    app('App\Http\Controllers\MailController')->txt_mail($user_name); //เรียก function จาก controller อื่น
                     return redirect()->back()->with('booked', 'บันทึกสำเร็จ'); //แจ้งเตือน sweetalert
         }
 
 
-
+        
         // $booking = Booking::create($request->all());
 
         return redirect()->route('admin.bookings.index');

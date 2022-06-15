@@ -32,6 +32,20 @@ class MailController extends Controller
         return $date->format("j $month $year");
     }
 
+    public static function DateThai($strDate)
+	{
+		$strYear = date("Y",strtotime($strDate))+543;
+		$strMonth= date("n",strtotime($strDate));
+		$strDay= date("j",strtotime($strDate));
+		$strHour= date("H",strtotime($strDate));
+		$strMinute= date("i",strtotime($strDate));
+		$strSeconds= date("s",strtotime($strDate));
+		$strMonthCut = Array("","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค.");
+		$strMonthThai=$strMonthCut[$strMonth];
+        $timesplit = "เวลา";
+		return "$strDay $strMonthThai $strYear $timesplit $strHour:$strMinute";
+	}
+
     public function txt_mail($user_name)
     {
         $info = array(
@@ -48,8 +62,8 @@ class MailController extends Controller
                 $zooms = DB::table('zooms')->where('zoom_number', '=', $booking->zoom_number)->get();
                 $users = DB::table('users')->where('username', '=', $booking->user_name)->get(); //dd($users);
 
-                $time_from = MailController::simpleDateFormat($booking->time_from);
-                $time_to = MailController::simpleDateFormat($booking->time_to);
+                $time_from = MailController::DateThai($booking->time_from);
+                $time_to = MailController::DateThai($booking->time_to);
 
                 foreach ($zooms as $zoom) {
                     foreach ($users as $user) {
@@ -70,7 +84,7 @@ class MailController extends Controller
                         โทร: 074-28-8104';
                         $message->to($user->email, $user->fullname) //ดึงมาจากเมล์ของ Psu Passport
                             ->subject('ยืนยันการใช้งานบัญชี Zoom');
-                        $message->from('wittaya.khuanwilai@gmail.com', 'ระบบจองบัญชีใช้งาน');
+                        $message->from('wittaya.kh@psu.ac.th', 'ระบบจองบัญชีใช้งาน');
                         $message->setBody($html,'text/html');
                     }
                 }

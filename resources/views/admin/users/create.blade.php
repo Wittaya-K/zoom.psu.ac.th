@@ -13,11 +13,27 @@
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('name', trans('quickadmin.users.fields.name').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
+                    {{-- {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!} --}}
+                    <select name="name" id="name" class="form-control select2">
+                        <option value="Admin">Amin</option>
+                        <option value="User">User</option>
+                    </select>
                     <p class="help-block"></p>
                     @if($errors->has('name'))
                         <p class="help-block">
                             {{ $errors->first('name') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 form-group">
+                    {!! Form::label('fullname', 'Full Name', ['class' => 'control-label']) !!}
+                    {!! Form::text('fullname', old('fullname'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
+                    <p class="help-block"></p>
+                    @if($errors->has('fullname'))
+                        <p class="help-block">
+                            {{ $errors->first('fullname') }}
                         </p>
                     @endif
                 </div>
@@ -30,6 +46,18 @@
                     @if($errors->has('email'))
                         <p class="help-block">
                             {{ $errors->first('email') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 form-group">
+                    {!! Form::label('username', 'Username', ['class' => 'control-label']) !!}
+                    {!! Form::text('username', old('username'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
+                    <p class="help-block"></p>
+                    @if($errors->has('username'))
+                        <p class="help-block">
+                            {{ $errors->first('username') }}
                         </p>
                     @endif
                 </div>

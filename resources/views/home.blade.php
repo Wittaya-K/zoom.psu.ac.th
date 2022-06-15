@@ -143,7 +143,6 @@
             events.push( {
             title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี', 
             start: new Date(y, m, i),
-            // url            : 'http://{{ $host }}:{{ $port }}/admin/booklists',
             backgroundColor: '#dd4b39', //red
             borderColor    : '#dd4b39' //red
           })
@@ -153,7 +152,6 @@
             events.push( {
             title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี', 
             start: new Date(y, m, i),
-            // url            : 'http://{{ $host }}:{{ $port }}/admin/booklists',
             backgroundColor: '#f39c12', //yellow
             borderColor    : '#f39c12' //yellow
           })
@@ -163,7 +161,6 @@
             events.push( {
             title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี', 
             start: new Date(y, m, i),
-            // url            : 'http://{{ $host }}:{{ $port }}/admin/booklists',
             backgroundColor: '#00a65a', //Success (green)
             borderColor    : '#00a65a' //Success (green)
           })
@@ -245,7 +242,7 @@
         selectable: true,
         dayClick: function(date) {
           // alert('clicked ' + date.format());
-          location.href = "http://{{ $host }}:{{ $port }}/admin/booklists?date="+date.format();
+          location.href = "http://{{ $host }}/admin/booklists?date="+date.format();
         },
         // select: function(startDate, endDate) {
         //   alert('selected ' + startDate.format() + ' to ' + endDate.format());
