@@ -51,7 +51,7 @@
             <div class="pull-right hidden-xs">
                 <b>Version</b> 1.0.0
             </div>
-            <strong>Copyright © 2022 <a href="#">คณะวิทยาศาสตร์ หน่วยเทคโนโลยีศึกษา</a>.</strong> All rights
+            <strong>Copyright © 2022 <a href="#">คณะวิทยาศาสตร์ หน่วยเทคโนโลยีการศึกษา</a>.</strong> All rights
             reserved.
         </footer>
     </div>

@@ -45,8 +45,8 @@ class BookingsController extends Controller
                 // ->select('bookings.id','bookings.user_name','bookings.time_from','bookings.time_to','bookings.additional_information','bookings.status_approve','zooms.id','zooms.zoom_number','zooms.zoom_email','zooms.category_id','categories.name')
                 // ->leftJoin('zooms', 'zooms.id', '=', 'bookings.id')
                 // ->leftJoin('categories', 'categories.id', '=', 'zooms.category_id')
-                ->whereDate('bookings.time_from','>=',$date)
-                ->whereDate('bookings.time_to','<=',$date)
+                ->whereDate('bookings.time_to','>=',$date)
+                // ->whereDate('bookings.time_to','<=',$date)
                 ->orderBy('bookings.zoom_email')
                 ->get();
             }else
@@ -78,7 +78,8 @@ class BookingsController extends Controller
         {
             foreach ($bookings as $booking) {
                 // $zooms = DB::table('zooms')->where('zoom_email','!=',$booking->zoom_email)->get(); //เช็ค Email ที่มีการจองแล้ว
-                $zooms = DB::select("SELECT zoom_email FROM zooms WHERE zoom_email NOT IN (SELECT zoom_email FROM bookings) AND category_id = '1'");
+                // $zooms = DB::select("SELECT zoom_email FROM zooms WHERE zoom_email NOT IN (SELECT zoom_email FROM bookings) AND category_id = '1'");
+                $zooms = DB::table('zooms')->where('category_id','=','1')->get();
             }
         }
         else

@@ -41,6 +41,8 @@
   #demo-content {
       /* padding-top: 100px; */
   }
+  .fc-sat { color:blue; }
+  .fc-sun { color:red;  }
 </style>
 
 	<!-- Demo content -->			
@@ -125,7 +127,20 @@
       
         })
       }
-      
+      function formatDate(date) {
+      var d = new Date(date),
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
+
+      if (month.length < 2) 
+          month = '0' + month;
+      if (day.length < 2) 
+          day = '0' + day;
+
+      return [year, month, day].join('-');
+  }
+
       init_events($('#external-events div.external-event'))
       
       /* initialize the calendar
@@ -136,36 +151,75 @@
           m    = date.getMonth(),
           y    = date.getFullYear()
       var events = []; //The array Event
-      for(var i = 0; i <= 31; i++) 
+      for(var i = 0; i <= '{{ $daycount }}'; i++) 
       {
-        if("{{ count($zooms)}}" < '1')
-        {
-            events.push( {
-            title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี', 
-            start: new Date(y, m, i),
-            backgroundColor: '#dd4b39', //red
-            borderColor    : '#dd4b39' //red
-          })
-        }
-        else if("{{ count($zooms)}}" <= '5')
-        {
-            events.push( {
-            title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี', 
-            start: new Date(y, m, i),
-            backgroundColor: '#f39c12', //yellow
-            borderColor    : '#f39c12' //yellow
-          })
-        }
-        else if("{{ count($zooms)}}" > '5')
-        {
-            events.push( {
-            title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี', 
-            start: new Date(y, m, i),
-            backgroundColor: '#00a65a', //Success (green)
-            borderColor    : '#00a65a' //Success (green)
-          })
-        }
+        // if("{{ count($zooms)}}" < '1')
+        // {
+        //     events.push( {
+        //     title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี',
+        //     start: new Date(y, m, i),
+        //     backgroundColor: '#dd4b39', //red
+        //     borderColor    : '#dd4b39' //red
+        //   })
+        // }
+        // else if("{{ count($zooms)}}" <= '5')
+        // {
+        //     events.push( {
+        //     title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี',
+        //     start: new Date(y, m, i),
+        //     backgroundColor: '#f39c12', //yellow
+        //     borderColor    : '#f39c12' //yellow
+        //   })
+        // }
+        // else if("{{ count($zooms)}}" > '5')
+        // {
+            var calendate = new Date(y, m, i);
+            var booking_date;
+            var countdate = 0;
+            @foreach($bookings as $booking)
+            {
+                booking_date = "{{ date('Y-m-d', strtotime($booking->formatted_dob)) }}";
+
+                if(formatDate(calendate) == booking_date)
+                {
+                    // countdate += countdate + 1;
+                    events.push( {
+                    title: 'มีรายการจองบัญชี',
+                    start: new Date(y, m, i),
+                    backgroundColor: '#00a65a', //Success (green)
+                    borderColor    : '#00a65a' //Success (green)
+                  })
+                }
+                // else if(formatDate(calendate) >= formatDate(date)) //แสดงเฉพาะวันที่ปัจจุปันเป็นต้นไป
+                // {
+                //     events.push( {
+                //     title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี',
+                //     start: new Date(y, m, i),
+                //     backgroundColor: '#00a65a', //Success (green)
+                //     borderColor    : '#00a65a' //Success (green)
+                //   })
+                // }
+                
+            }
+            @endforeach
+            //  if(formatDate(calendate) >= formatDate(date)) //แสดงเฉพาะวันที่ปัจจุปันเป็นต้นไป
+            //     {
+            //         events.push( {
+            //         title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี',
+            //         start: new Date(y, m, i),
+            //         backgroundColor: '#00a65a', //Success (green)
+            //         borderColor    : '#00a65a' //Success (green)
+            //       })
+            //     }            
+          //   events.push( {
+          //   title: 'จำนวนบัญชีที่ว่าง {{ count($zooms)}} บัญชี',
+          //   start: new Date(y, m, i),
+          //   backgroundColor: '#00a65a', //Success (green)
+          //   borderColor    : '#00a65a' //Success (green)
+          // })
+        // }
       }
+
       $('#calendar').fullCalendar({
         header    : {
           left  : 'prev,next today',
@@ -239,10 +293,10 @@
         //   //   borderColor    : '#3c8dbc' //Primary (light-blue)
         //   // }
         // ],
-        selectable: true,
+        //selectable: true,
         dayClick: function(date) {
           // alert('clicked ' + date.format());
-          location.href = "http://{{ $host }}/admin/booklists?date="+date.format();
+          location.href = "booklists?date="+date.format();
         },
         // select: function(startDate, endDate) {
         //   alert('selected ' + startDate.format() + ' to ' + endDate.format());
@@ -274,6 +328,21 @@
           }
       
         }
+        // ,
+        // dayRender: function (date, cell) {
+        // var today = new Date();
+        // var end = new Date();
+        // end.setDate(today.getDate()+1);
+
+        // // if (d === today.getDate()) {
+        // //     cell.css("background-color", "#F9EBEA");
+        // // }
+
+        // if(date > today && date <= end) {
+        //     cell.css("background-color", "#bce8f1");
+        // }
+
+        // }
       })
       
       /* ADDING EVENTS */

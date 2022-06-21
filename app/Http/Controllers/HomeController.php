@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 class HomeController extends Controller
 {
@@ -22,36 +23,53 @@ class HomeController extends Controller
      */
     public function index()
     {   
-        // $host = self::getUserIpAddr();
-        // $port = '8000';
-        // $bookings = DB::table('bookings')->get();
-        // $zooms = DB::table('zooms')->where('category_id', '=', 1)->get();
+        $date_time_now = Carbon::now();
+        $datetimenow = date('Y-m-d', strtotime($date_time_now->toDateTimeString())); //แปลงวันที่เวลาเป็นวันที่อย่างเดียว
 
+        // $bookings = DB::table('bookings')->select('created_at')->distinct()->get();
+
+        $bookings = DB::table('bookings as book')
+                        ->select(DB::raw('DATE_FORMAT(book.time_to, "%d-%m-%Y") as formatted_dob'))
+                        ->distinct()
+                        ->whereDate('book.time_to','>=',$datetimenow)
+                        ->get(); //ดึงข้อมูลเฉพาะวันที่มีการจองและไม่ซ้ำกัน
+
+        $zooms = DB::table('zooms')->where('category_id', '=', 1)->get();
+        
         // return view('home',compact('bookings','zooms','host','port'));
 
-        $host = 'zoom.sci.psu.ac.th';
-        $bookings = DB::table('bookings')->get();
-        $zooms = DB::table('zooms')->where('category_id', '=', 1)->get();
+        // $host = 'zoom.sci.psu.ac.th';
+        // $bookings = DB::table('bookings')->get();
+        // $zooms = DB::table('zooms')->where('category_id', '=', 1)->get();
+        
+        $day = date("d-m-Y"); //คำนวณวันเดือนปี หาจำนวนวันของเดือนนั้น ๆ
+        $date = explode("-", $day);
 
-        return view('home',compact('bookings','zooms','host'));
-    }
-
-    public function getUserIpAddr(){
-        $ipaddress = '';
-        if (isset($_SERVER['HTTP_CLIENT_IP']))
-            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
-        else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        else if(isset($_SERVER['HTTP_X_FORWARDED']))
-            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
-        else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
-            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
-        else if(isset($_SERVER['HTTP_FORWARDED']))
-            $ipaddress = $_SERVER['HTTP_FORWARDED'];
-        else if(isset($_SERVER['REMOTE_ADDR']))
-            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        if ($date[1]=="2")
+        {
+            if($date[2] % 4 ==0)
+            {
+                // echo "day = 29";
+                $daycount = 29;
+            }
+            else
+            {
+                // echo "day = 28";
+                $daycount = 28;
+            }
+            
+        }
+        elseif($date[1]=="4" || $date[1]=="6" || $date[1]=="9" || $date[1]=="11")
+        {
+            // echo "day = 30";
+            $daycount = 30;
+        }
         else
-            $ipaddress = 'UNKNOWN';    
-        return $ipaddress;
-     }
+        {
+            // echo "day = 31";
+            $daycount = 31;
+        }
+
+        return view('home',compact('bookings','zooms','daycount'));
+    }
 }

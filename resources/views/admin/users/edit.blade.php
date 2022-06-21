@@ -14,11 +14,7 @@
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('name', trans('quickadmin.users.fields.name').'*', ['class' => 'control-label']) !!}
-                    {{-- {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!} --}}
-                    <select name="name" id="name" class="form-control select2">
-                        <option value="Admin">Admin</option>
-                        <option value="User">User</option>
-                    </select>
+                    {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
                     <p class="help-block"></p>
                     @if($errors->has('name'))
                         <p class="help-block">
