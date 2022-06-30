@@ -24,8 +24,8 @@ class StoreBookingsRequest extends FormRequest
     {
         return [
             'customer_id' => 'required',
-            'time_from' => 'required|date_format:'.config('app.date_format').' H:i',
-            'time_to' => 'required|date_format:'.config('app.date_format'). ' H:i',
+            'time_from' => 'required',
+            'time_to' => 'required',
             'additional_information' => 'required',
             'user_name' => 'required',
             'status_approve' => 'required',

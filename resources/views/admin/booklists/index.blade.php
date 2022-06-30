@@ -206,10 +206,10 @@
                 '{{ route('admin.bookings.mass_destroy') }}';
             @endif
         @endcan
-        setTimeout(function(){  $('#table').DataTable().ajax.reload();  },2000);
+        // setTimeout(function(){  $('#table').DataTable().ajax.reload();  },2000);
         
-        setTimeout(function() {
-            location.reload();
-        }, 60 * 1000);
+        // setTimeout(function() {
+        //     location.reload();
+        // }, 60 * 1000);
     </script>
 @endsection

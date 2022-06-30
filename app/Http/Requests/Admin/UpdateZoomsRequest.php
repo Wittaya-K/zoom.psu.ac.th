@@ -25,7 +25,7 @@ class UpdateZoomsRequest extends FormRequest
         return [
             'zoom_email' => 'required',
             'zoom_number' => 'required',
-            'password' => 'max:2147483647|required|numeric',
+            'password' => 'required',
             'description' => 'required',
             'expire_at' => 'required',
         ];

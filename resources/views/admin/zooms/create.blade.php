@@ -36,7 +36,7 @@
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('password', trans('Zoom Password').'*', ['class' => 'control-label']) !!}
-                    {!! Form::number('password', old('password'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
+                    {!! Form::text('password', old('password'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
                     <p class="help-block"></p>
                     @if($errors->has('password'))
                         <p class="help-block">

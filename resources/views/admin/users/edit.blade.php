@@ -14,7 +14,11 @@
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('name', trans('quickadmin.users.fields.name').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
+                    {{-- {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!} --}}
+                    <select name="name" id="name" class="form-control select2">
+                        <option value="Admin">Admin</option>
+                        <option value="User">User</option>
+                    </select>
                     <p class="help-block"></p>
                     @if($errors->has('name'))
                         <p class="help-block">
@@ -59,7 +63,7 @@
                     @endif
                 </div>
             </div>
-            <div class="row">
+            {{-- <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('password', trans('quickadmin.users.fields.password').'*', ['class' => 'control-label']) !!}
                     {!! Form::password('password', ['class' => 'form-control', 'placeholder' => '']) !!}
@@ -70,7 +74,7 @@
                         </p>
                     @endif
                 </div>
-            </div>
+            </div> --}}
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('role_id', trans('quickadmin.users.fields.role').'*', ['class' => 'control-label']) !!}

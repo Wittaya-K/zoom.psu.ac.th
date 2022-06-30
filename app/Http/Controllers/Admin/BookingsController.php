@@ -35,25 +35,38 @@ class BookingsController extends Controller
             $bookings = Booking::onlyTrashed()->get();
         } else {
             // $bookings = Booking::all();
+            $date_time_now = Carbon::now();
+            $date = date('Y-m-d', strtotime($date_time_now->toDateTimeString())); //แปลงวันที่เวลาเป็นวันที่อย่างเดียว
+            // if(auth()->user()->name == 'Admin') //เช็คสิทธิ์ Admin
+            // {
+            //     // $bookings = Booking::all();
+            //     $bookings = DB::table('bookings')
+            //     // ->select('bookings.id','bookings.user_name','bookings.time_from','bookings.time_to','bookings.additional_information','bookings.status_approve','zooms.id','zooms.zoom_number','zooms.zoom_email','zooms.category_id','categories.name')
+            //     // ->leftJoin('zooms', 'zooms.id', '=', 'bookings.id')
+            //     // ->leftJoin('categories', 'categories.id', '=', 'zooms.category_id')
+            //     ->whereDate('bookings.time_to','>=',$date)
+            //     // ->whereDate('bookings.time_to','<=',$date)
+            //     ->orderBy('bookings.time_from')
+            //     ->get();
+            // }else
+            // {
+            //     $bookings = DB::table('bookings')->where('user_name', '=', auth()->user()->username)->get();
+            // }
             if(auth()->user()->name == 'Admin') //เช็คสิทธิ์ Admin
             {
-                // $bookings = Booking::all();
-                $date_time_now = Carbon::now();
-                $date = date('Y-m-d', strtotime($date_time_now->toDateTimeString())); //แปลงวันที่เวลาเป็นวันที่อย่างเดียว
-
                 $bookings = DB::table('bookings')
-                // ->select('bookings.id','bookings.user_name','bookings.time_from','bookings.time_to','bookings.additional_information','bookings.status_approve','zooms.id','zooms.zoom_number','zooms.zoom_email','zooms.category_id','categories.name')
-                // ->leftJoin('zooms', 'zooms.id', '=', 'bookings.id')
-                // ->leftJoin('categories', 'categories.id', '=', 'zooms.category_id')
-                ->whereDate('bookings.time_from','>=',$date)
-                ->whereDate('bookings.time_to','<=',$date)
-                ->orderBy('bookings.zoom_email')
+                ->whereDate('bookings.time_to','>=',$date)
+                ->orderBy('bookings.time_from')
                 ->get();
-            }else
-            {
-                $bookings = DB::table('bookings')->where('user_name', '=', auth()->user()->username)->get();
             }
-            
+            else
+            {
+                $bookings = DB::table('bookings')
+                ->where('user_name','=',auth()->user()->username)
+                ->whereDate('bookings.time_to','>=',$date)
+                ->orderBy('bookings.time_from')
+                ->get();
+            }
         }
 
         return view('admin.bookings.index', compact('bookings'));
@@ -78,11 +91,16 @@ class BookingsController extends Controller
         {
             foreach ($bookings as $booking) {
                 // $zooms = DB::table('zooms')->where('zoom_email','!=',$booking->zoom_email)->get(); //เช็ค Email ที่มีการจองแล้ว
-                $zooms = DB::select("SELECT zoom_email FROM zooms WHERE zoom_email NOT IN (SELECT zoom_email FROM bookings)");
+                // $zooms = DB::select("SELECT zoom_email FROM zooms WHERE zoom_email NOT IN (SELECT zoom_email FROM bookings) AND category_id = '1'");
+                // $zooms = DB::table('zooms')->where('category_id','=','1')->get();
+                $zooms = DB::table('zooms')
+                ->orderBy('zoom_number')
+                ->get();
             }
         }
         else
         {
+            // $zooms = DB::table('zooms')->where('category_id','=','1')->get();
             $zooms = DB::table('zooms')->get();
         }
 
@@ -108,7 +126,8 @@ class BookingsController extends Controller
         $time_to = $request->input('time_to');
         $additional_information = $request->input('additional_information');
         $user_name = $request->input('user_name');
-        $status_approve = 'ไม่อนุมัติ';
+        // $status_approve = 'ไม่อนุมัติ';
+        $status_approve = 'อนุมัติ';
 
         $bookings = DB::table('bookings')->get();
 
@@ -122,6 +141,15 @@ class BookingsController extends Controller
             }
 
             DB::insert('insert into bookings(time_from, time_to, additional_information, created_at, updated_at, deleted_at, customer_id, zoom_id, user_name, status_approve, zoom_number, zoom_email) values(?,?,?,?,?,?,?,?,?,?,?,?)',array($time_from,$time_to,$additional_information,now(),null,null,$customer_id,$zoom_id,$user_name,$status_approve,$zoom_number,$zoom_email));
+        
+            if($status_approve == 'อนุมัติ')
+            {
+                DB::table('zooms')->where('zoom_number','=',$zoom_number)->update(array(
+                    'category_id'=>2,
+                ));
+            }
+
+            app('App\Http\Controllers\MailController')->txt_mail($user_name); //เรียก function จาก controller อื่น
             return redirect()->back()->with('booked', 'บันทึกสำเร็จ'); //แจ้งเตือน sweetalert
         }
         else
@@ -139,26 +167,40 @@ class BookingsController extends Controller
                 if($booking->time_from > $time_f && $booking->time_to < $time_t)
                 {	#-> Check time is in between start and end time
                     // echo "1 Time is in between start and end time";
-                    return redirect()->back()->with('duplicated', 'เวลาที่ท่านระบุมีการจองแล้ว');
-                    // return redirect()->back()->with('error', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                    if($booking->zoom_email == $zoom_email)
+                    {
+                        return redirect()->back()->with('duplicated', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                        // return redirect()->back()->with('error', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                    }
+
                 }
                 elseif(($booking->time_from > $time_f && $booking->time_from < $time_t) || ($booking->time_to > $time_f && $booking->time_to < $time_t))
                 {	#-> Check start or end time is in between start and end time
                     // echo "2 ChK start or end Time is in between start and end time";
-                    return redirect()->back()->with('duplicated', 'เวลาที่ท่านระบุมีการจองแล้ว');
-                    // return redirect()->back()->with('error', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                    if($booking->zoom_email == $zoom_email)
+                    {
+                        return redirect()->back()->with('duplicated', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                        // return redirect()->back()->with('error', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                    }
                 }
-                elseif($booking->time_from==$time_f || $booking->time_to==$time_t)
+                // elseif(($booking->time_from == $time_f) || ($booking->time_to == $time_t) || $booking->zoom_email == $zoom_email)
+                elseif(($booking->time_from == $time_f) || ($booking->time_to == $time_t))
                 {	#-> Check start or end time is at the border of start and end time
                     // echo "3 ChK start or end Time is at the border of start and end time";
-                    return redirect()->back()->with('duplicated', 'เวลาที่ท่านระบุมีการจองแล้ว');
-                    // return redirect()->back()->with('error', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                    if($booking->zoom_email == $zoom_email)
+                    {
+                        return redirect()->back()->with('duplicated', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                        // return redirect()->back()->with('error', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                    }
                 }
                 elseif($time_f > $booking->time_from && $time_t < $booking->time_to)
                 {	#-> start and end time is in between  the check start and end time.
                     // echo "4 start and end Time is overlapping  chk start and end time";
-                    return redirect()->back()->with('duplicated', 'เวลาที่ท่านระบุมีการจองแล้ว');
-                    // return redirect()->back()->with('error', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                    if($booking->zoom_email == $zoom_email)
+                    {
+                        return redirect()->back()->with('duplicated', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                        // return redirect()->back()->with('error', 'เวลาที่ท่านระบุมีการจองแล้ว');
+                    }
                 }
             }
                     $zooms = DB::table('zooms')->where('zoom_email', '=', $zoom_email)->get();
@@ -170,11 +212,19 @@ class BookingsController extends Controller
         
                     DB::insert('insert into bookings(time_from, time_to, additional_information, created_at, updated_at, deleted_at, customer_id, zoom_id, user_name, status_approve, zoom_number, zoom_email) values(?,?,?,?,?,?,?,?,?,?,?,?)',array($time_from,$time_to,$additional_information,now(),null,null,$customer_id,$zoom_id,$user_name,$status_approve,$zoom_number,$zoom_email));
                     // return redirect()->back()->with('success', 'บันทึกสำเร็จ');
+                    if($status_approve == 'อนุมัติ')
+                    {
+                        DB::table('zooms')->where('zoom_number','=',$zoom_number)->update(array(
+                            'category_id'=>2,
+                        ));
+                    }
+                    
+                    app('App\Http\Controllers\MailController')->txt_mail($user_name); //เรียก function จาก controller อื่น
                     return redirect()->back()->with('booked', 'บันทึกสำเร็จ'); //แจ้งเตือน sweetalert
         }
 
 
-
+        
         // $booking = Booking::create($request->all());
 
         return redirect()->route('admin.bookings.index');
@@ -230,12 +280,13 @@ class BookingsController extends Controller
         $zoom_email = $request->input('zoom_email');
         $user_name = $request->input('user_name');
         $status_approve = $request->input('status_approve');
-        $zoom_number = $booking->zoom_number;
+        // $zoom_number = $booking->zoom_number;
 
         $zooms = DB::table('zooms')->where('zoom_email', '=', $zoom_email)->get();
         foreach ($zooms as $zoom) 
         {
             $zoom_id = $zoom->id;
+            $zoom_number = $zoom->zoom_number;
         }
 
         if($status_approve == 'อนุมัติ')
@@ -313,8 +364,9 @@ class BookingsController extends Controller
         if (!Gate::allows('booking_delete')) {
             return abort(401);
         }
-        $booking = Booking::findOrFail($id);
-        $booking->delete();
+        DB::table('bookings')->where('id','=',$id)->delete();
+        // $booking = Booking::findOrFail($id);
+        // $booking->delete();
 
         return redirect()->route('admin.bookings.index');
     }

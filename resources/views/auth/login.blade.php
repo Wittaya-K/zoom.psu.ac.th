@@ -1,6 +1,21 @@
 @extends('layouts.auth')
 
 @section('content')
+{{-- <script>
+    var msg = '{{Session::get('alert')}}';
+    var exist = '{{Session::has('alert')}}';
+    if(exist){
+      alert(msg);
+    }
+  </script> --}}
+    <script src="https://unpkg.com/sweetalert@2.1.2/dist/sweetalert.min.js"></script>
+
+    @if (Session::get('alert'))
+        <script>
+            swal("แจ้งเตือน", "Username หรือ Password ไม่ถูกต้อง กรุณา Login ใหม่อีกครั้ง", "warning");
+        </script>
+    @endif
+
     {{-- <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">

@@ -1,23 +1,39 @@
 @extends('layouts.app')
 
 @section('content')
-    <h3 class="page-title">@lang('quickadmin.users.title')</h3>
+    <h3 class="page-title">ผู้ใช้งาน</h3>
     {!! Form::open(['method' => 'POST', 'route' => ['admin.users.store']]) !!}
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            @lang('quickadmin.qa_create')
+            เพิ่มผู้ใช้งาน
         </div>
         
         <div class="panel-body">
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('name', trans('quickadmin.users.fields.name').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
+                    {{-- {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!} --}}
+                    <select name="name" id="name" class="form-control select2">
+                        <option value="Admin">Admin</option>
+                        <option value="User">User</option>
+                    </select>
                     <p class="help-block"></p>
                     @if($errors->has('name'))
                         <p class="help-block">
                             {{ $errors->first('name') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 form-group">
+                    {!! Form::label('fullname', 'Full Name', ['class' => 'control-label']) !!}
+                    {!! Form::text('fullname', old('fullname'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
+                    <p class="help-block"></p>
+                    @if($errors->has('fullname'))
+                        <p class="help-block">
+                            {{ $errors->first('fullname') }}
                         </p>
                     @endif
                 </div>
@@ -36,6 +52,18 @@
             </div>
             <div class="row">
                 <div class="col-xs-12 form-group">
+                    {!! Form::label('username', 'Username', ['class' => 'control-label']) !!}
+                    {!! Form::text('username', old('username'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
+                    <p class="help-block"></p>
+                    @if($errors->has('username'))
+                        <p class="help-block">
+                            {{ $errors->first('username') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            {{-- <div class="row">
+                <div class="col-xs-12 form-group">
                     {!! Form::label('password', trans('quickadmin.users.fields.password').'*', ['class' => 'control-label']) !!}
                     {!! Form::password('password', ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
                     <p class="help-block"></p>
@@ -45,7 +73,7 @@
                         </p>
                     @endif
                 </div>
-            </div>
+            </div> --}}
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('role_id', trans('quickadmin.users.fields.role').'*', ['class' => 'control-label']) !!}
@@ -62,7 +90,8 @@
         </div>
     </div>
 
-    {!! Form::submit(trans('quickadmin.qa_save'), ['class' => 'btn btn-danger']) !!}
+    {{-- {!! Form::submit(trans('quickadmin.qa_save'), ['class' => 'btn btn-danger']) !!} --}}
+    <button type="submit" class="btn btn-success"><i class="fa fa-floppy-o" aria-hidden="true"></i> บันทึก</button>
     {!! Form::close() !!}
 @stop
 

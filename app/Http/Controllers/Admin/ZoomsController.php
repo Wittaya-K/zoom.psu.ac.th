@@ -145,8 +145,9 @@ class ZoomsController extends Controller
         if (! Gate::allows('zoom_delete')) {
             return abort(401);
         }
-        $zoom = Zoom::findOrFail($id);
-        $zoom->delete();
+        DB::table('zooms')->delete($id);
+        // $zoom = Zoom::findOrFail($id);
+        // $zoom->delete();
 
         return redirect()->route('admin.zooms.index');
     }

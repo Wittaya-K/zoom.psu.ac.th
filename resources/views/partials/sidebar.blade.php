@@ -14,7 +14,7 @@
                 </a>
             </li>
 
-            
+            @if(auth()->user()->name == "Admin")
             @can('user_management_access')
             <li class="treeview">
                 <a href="#">
@@ -49,7 +49,8 @@
                 </ul>
             </li>
             @endcan
-
+            @endif
+            
             @can('country_access')
             {{-- <li class="{{ $request->segment(2) == 'countries' ? 'active' : '' }}">
                 <a href="{{ route('admin.countries.index') }}">
@@ -58,6 +59,8 @@
                 </a>
             </li> --}}
             @endcan
+
+            @if(auth()->user()->name == "Admin")
             @can('category_create')
                 <li class="{{ $request->segment(2) == 'categories' ? 'active' : '' }}">
                         <a href="{{ route('admin.categories.index') }}">
@@ -68,7 +71,7 @@
                         </a>
                     </li>
             @endcan
-
+            @endif
             {{-- @can('customer_access')
             <li class="{{ $request->segment(2) == 'customers' ? 'active' : '' }}">
                 <a href="{{ route('admin.customers.index') }}">
@@ -86,7 +89,7 @@
                 </a>
             </li>
             @endcan --}}
-
+            @if(auth()->user()->name == "Admin")
             @can('zoom_access')
             <li class="{{ $request->segment(2) == 'zooms' ? 'active' : '' }}">
                 <a href="{{ route('admin.zooms.index') }}">
@@ -95,7 +98,9 @@
                 </a>
             </li>
             @endcan
+            @endif
 
+            @if(auth()->user()->name == "Admin" || auth()->user()->name == "User" )
             @can('booking_access')
             <li class="{{ $request->segment(2) == 'bookings' ? 'active' : '' }}">
                 <a href="{{ route('admin.bookings.index') }}">
@@ -104,7 +109,7 @@
                 </a>
             </li>
             @endcan
-
+            @endif
             {{-- @can('find_room_access')
             <li class="{{ $request->segment(1) == 'find_rooms' ? 'active' : '' }}">
                 <a href="{{ route('admin.find_rooms.index') }}">

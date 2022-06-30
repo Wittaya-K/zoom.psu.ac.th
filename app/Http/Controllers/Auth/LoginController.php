@@ -64,9 +64,30 @@ class LoginController extends Controller
         $password = $request->input('password');
 
         // User::create($request->all());
-
+        $dbusers = DB::table('users')->where('username', '=', $username)->get();
+        foreach ($dbusers as $dbuser) {
+            $dbusername = $dbuser->username;
+            $dbpassword = $dbuser->password;
+            $dbemail = $dbuser->email;
+            $dbfullname = $dbuser->fullname;
+            if($username == $dbusername && $dbpassword == null)
+            {
+                // dd($dbuser->password);
+                DB::table('users')->where('username','=',$username)->update(array(
+                    'name' => 'User',
+                    'fullname' => $dbfullname,
+                    'email' => $dbemail,
+                    'username' => $username,
+                    'password' => Hash::make($password),
+                    'remember_token' => null,
+                    'created_at' =>now() ,
+                    'updated_at' => now() ,
+                    'role_id' => '2',
+                ));
+            }
+        }
         $ldap = self::authenticate($server,$basedn,$domain,$username,$password);
-        // try {
+        try {
             if($ldap[0]){
                 $name = $ldap[1]['description'];
                 $email = $ldap[1]['mail'];
@@ -103,7 +124,8 @@ class LoginController extends Controller
                     else
                     {
                         DB::insert('insert into users(name, fullname, email, username, password, remember_token, created_at , updated_at , role_id) 
-                        values(?,?,?,?,?,?,?,?,?)',array('User', $name, $email, $username, Hash::make($password), null, now(), now(), '2'));
+                        values(?,?,?,?,?,?,?,?,?)',array('Other', $name, $email, $username, Hash::make($password), null, now(), now(), '2'));
+                        $dbusers = DB::table('users')->where('email','=',$username)->get();
                     }
                     // if(isEmpty($users))
                     // {
@@ -121,11 +143,14 @@ class LoginController extends Controller
                     // }
     
             }
-        // } catch (Throwable $e) {
-        //     // report($e);
-        //     abort(403, 'Unauthorized action.');
-        //     // return false;
-        // }
+        } catch (Throwable $e) {
+            // report($e);
+            // abort(403, 'Unauthorized action.');
+            // return false;
+            // return redirect()->route('auth.login');
+            
+        return redirect()->back() ->with('alert', 'Username หรือ Password ไม่ถูกต้องกรุณา Login ใหม่อีกครั้ง');
+        }
 
 
         $fieldType = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
@@ -134,7 +159,7 @@ class LoginController extends Controller
             // return redirect()->route('/admin/home');
             return redirect()->intended('/admin/home');
         }else{
-            return redirect()->route('login')
+            return redirect()->route('auth.login')
                 ->with('error','Email-Address And Password Are Wrong.');
         }
           
@@ -142,7 +167,7 @@ class LoginController extends Controller
 
 protected static function authenticate($server,$basedn,$domain,$username,$password)
     {
-        // try {
+        try {
             $auth_status = false;
             $i=0;
             while(($i<count($server))&&($auth_status==false)){
@@ -166,11 +191,12 @@ protected static function authenticate($server,$basedn,$domain,$username,$passwo
             $i++;
             }
             return $result;
-        // } catch (Throwable $e) {
-        //     // report($e);
-        //     abort(403, 'Unauthorized action.');
-        //     // return false;
-        // }
+        } catch (Throwable $e) {
+            // report($e);
+            // abort(403, 'Unauthorized action.');
+            // return false;
+            return redirect()->route('auth.login');
+        }
 
     }
     

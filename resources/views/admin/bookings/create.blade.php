@@ -66,10 +66,11 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('customer_id', trans('ผู้ใช้งาน') . '', ['class' => 'control-label']) !!}
-                    {{-- {!! Form::select('customer_id', $customers, old('customer_id'), ['class' => 'form-control select2']) !!} --}}
-                    <input type="text" name="user_name" id="user_name" value="{{ auth()->user()->username }}"
-                        class="form-control" readonly>
+                    <label for="user_name" class="control-label">ผู้ใช้งาน</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                        <input type="text" name="user_name" id="user_name" value="{{ auth()->user()->username }}" class="form-control" readonly>
+                    </div>
                     <input type="hidden" name="customer_id" id="customer_id" value="1" class="form-control">
                     <input type="hidden" name="status_approve" id="status_approve" value="ไม่อนุมัติ" class="form-control">
                     <p class="help-block"></p>
@@ -83,15 +84,16 @@
 
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {{-- {!! Form::label('zoom_email', trans('Zoom Email') . '', ['class' => 'control-label']) !!} --}}
-                    {{-- {!! Form::select('zoom_email', $zooms, old('zoom_email'), ['class' => 'form-control select2']) !!} --}}
-                    <label for="zoom_email">Zoom Email</label>
-                      <select class="form-control select2" name="zoom_email" id="zoom_email">
-                        <option>เลือก</option>
-                        @foreach ($zooms as $zoom)
-                        <option value="{{ $zoom->zoom_email }}">{{ $zoom->zoom_email }}</option>
-                        @endforeach
-                      </select>
+                    <label for="zoom_email" class="control-label">Zoom Email</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                        <select class="form-control select2" name="zoom_email" id="zoom_email" required>
+                            <option>เลือก</option>
+                            @foreach ($zooms as $zoom)
+                            <option value="{{ $zoom->zoom_email }}">{{ $zoom->zoom_email }}</option>
+                            @endforeach
+                          </select>
+                    </div>
                     <p class="help-block"></p>
                     @if ($errors->has('zoom_email'))
                         <p class="help-block">
@@ -103,9 +105,11 @@
 
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('time_from', trans('ตั้งแต่วันที่') . '*', ['class' => 'control-label']) !!}
-                    {{-- {!! Form::text('time_from', old('time_from'), ['class' => 'form-control datetimepicker', 'placeholder' => '', 'required' => '']) !!} --}}
-                    {!! Form::text('time_from', old('time_from'), ['class' => 'form-control', 'placeholder' => '', 'required' => '', 'id' => 'datetimepicker_mask_from']) !!}
+                    <label for="time_from" class="control-label">ตั้งแต่วันที่</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" name="time_from" id="datetimepicker_mask_from" class="form-control" required>
+                    </div>
                     <p class="help-block"></p>
                     @if ($errors->has('time_from'))
                         <p class="help-block">
@@ -116,8 +120,11 @@
             </div>
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('time_to', trans('ถึงวันที่') . '*', ['class' => 'control-label']) !!}
-                    {!! Form::text('time_to', old('time_to'), ['class' => 'form-control datetimepicker', 'placeholder' => '', 'required' => '', 'id' => 'datetimepicker_mask_to']) !!}
+                    <label for="time_to" class="control-label">ถึงวันที่</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" name="time_to" id="datetimepicker_mask_to" class="form-control" required>
+                    </div>
                     <p class="help-block"></p>
                     @if ($errors->has('time_to'))
                         <p class="help-block">
@@ -128,8 +135,11 @@
             </div>
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('additional_information', trans('รายละเอียดเพิ่มเติม') . '*', ['class' => 'control-label']) !!}
-                    {!! Form::textarea('additional_information', old('additional_information'), ['class' => 'form-control ', 'placeholder' => '', 'required' => '']) !!}
+                    <label for="time_to" class="control-label">รายละเอียดเพิ่มเติม</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-file-text"></i></span>
+                        <textarea name="additional_information" id="additional_information" cols="30" rows="10" class="form-control" required></textarea>
+                    </div>
                     <p class="help-block"></p>
                     @if ($errors->has('additional_information'))
                         <p class="help-block">
@@ -169,17 +179,22 @@
         // formatTime: 'H:i',
         // formatDate: 'Y-m-d',
         // });
+        $.datetimepicker.setLocale('th');
         $('#datetimepicker_mask_from').datetimepicker({
-            mask:'9999-19-39 29:59',
+            mask:'0000-00-00 00:00',
             format: 'Y-m-d H:i',
             formatTime: 'H:i',
             formatDate: 'Y-m-d',
+            step:30, //กำหนดค่านาทีของเวลา
+            lang:'th' //กำหนดค่าเป็นภาษาไทย
         });
         $('#datetimepicker_mask_to').datetimepicker({
-            mask:'9999-19-39 29:59',
+            mask:'0000-00-00 00:00',
             format: 'Y-m-d H:i',
             formatTime: 'H:i',
             formatDate: 'Y-m-d',
+            step:30, //กำหนดค่านาทีของเวลา
+            lang:'th' //กำหนดค่าเป็นภาษาไทย
         });
     </script>
 @stop

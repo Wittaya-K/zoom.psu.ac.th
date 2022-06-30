@@ -39,7 +39,10 @@
         #demo-content {
             /* padding-top: 100px; */
         }
-
+        div.dt-buttons
+        {
+            display: none;
+        }
     </style>
 
     @if ($message = Session::get('success'))
@@ -107,7 +110,7 @@
                             @if (request('show_deleted') == 1)
                                 <th>&nbsp;</th>
                             @else
-                                <th>&nbsp;</th>
+                                <th style="width: 66px;">&nbsp;</th>
                             @endif
                         </tr>
                     </thead>
@@ -162,7 +165,7 @@
                                             @endcan
                                         </td>
                                     @else
-                                        @if (auth()->user()->name == 'Admin')
+                                        {{-- @if (auth()->user()->name == 'User') --}}
                                             {{-- เช็คสิทธ์ Admin --}}
                                             <td style="text-align: center;">
                                                 {{-- @can('booking_view')
@@ -184,9 +187,9 @@
                                                     {!! Form::close() !!}
                                                 @endcan
                                             </td>
-                                        @else
-                                            <td></td>
-                                        @endif
+                                        {{-- @else --}}
+                                            {{-- <td></td> --}}
+                                        {{-- @endif --}}
                                     @endif
                                 </tr>
                             @endforeach
@@ -211,10 +214,10 @@
                 '{{ route('admin.bookings.mass_destroy') }}';
             @endif
         @endcan
-        setTimeout(function(){  $('#table').DataTable().ajax.reload();  },2000);
+        // setTimeout(function(){  $('#table').DataTable().ajax.reload();  },2000);
         
-        setTimeout(function() {
-            location.reload();
-        }, 60 * 1000);
+        // setTimeout(function() {
+        //     location.reload();
+        // }, 60 * 1000);
     </script>
 @endsection

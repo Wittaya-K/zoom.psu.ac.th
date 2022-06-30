@@ -36,25 +36,35 @@ class BooklistsController extends Controller
             $bookings = Booking::onlyTrashed()->get();
         } else {
             // $bookings = Booking::all();
-            if(auth()->user()->name == 'Admin') //เช็คสิทธิ์ Admin
-            {
-                // $bookings = Booking::all();
-                // $date_time_now = Carbon::now();
-                // $date = date('Y-m-d', strtotime($date_time_now->toDateTimeString())); //แปลงวันที่เวลาเป็นวันที่อย่างเดียว
+            // if(auth()->user()->name == 'Admin') //เช็คสิทธิ์ Admin
+            // {
+            //     // $bookings = Booking::all();
+            //     // $date_time_now = Carbon::now();
+            //     // $date = date('Y-m-d', strtotime($date_time_now->toDateTimeString())); //แปลงวันที่เวลาเป็นวันที่อย่างเดียว
 
-                $bookings = DB::table('bookings')
-                // ->select('bookings.id','bookings.user_name','bookings.time_from','bookings.time_to','bookings.additional_information','bookings.status_approve','zooms.id','zooms.zoom_number','zooms.zoom_email','zooms.category_id','categories.name')
-                // ->leftJoin('zooms', 'zooms.id', '=', 'bookings.id')
-                // ->leftJoin('categories', 'categories.id', '=', 'zooms.category_id')
-                ->whereDate('bookings.time_from','>=',$date)
-                ->whereDate('bookings.time_to','<=',$date)
-                ->orderBy('bookings.zoom_email')
-                ->get();
-            }else
-            {
-                $bookings = DB::table('bookings')->where('user_name', '=', auth()->user()->username)->get();
-            }
-            
+            //     $bookings = DB::table('bookings')
+            //     // ->select('bookings.id','bookings.user_name','bookings.time_from','bookings.time_to','bookings.additional_information','bookings.status_approve','zooms.id','zooms.zoom_number','zooms.zoom_email','zooms.category_id','categories.name')
+            //     // ->leftJoin('zooms', 'zooms.id', '=', 'bookings.id')
+            //     // ->leftJoin('categories', 'categories.id', '=', 'zooms.category_id')
+            //     ->whereDate('bookings.time_from','>=',$date)
+            //     ->whereDate('bookings.time_to','<=',$date)
+            //     ->orderBy('bookings.time_from')
+            //     ->get();
+            // }else
+            // {
+            //     $bookings = DB::table('bookings')->where('user_name', '=', auth()->user()->username)->get();
+            // }
+            // $bookings = DB::table('bookings')
+            //                     ->whereDate('bookings.time_from','>=',$date)
+            //                     ->whereDate('bookings.time_to','<=',$date)
+            //                     ->orderBy('bookings.time_from')
+            //                     ->dd();
+
+            $bookings = DB::table('bookings as book')
+            ->select(DB::raw('DATE_FORMAT(book.time_to, "%Y-%m-%d") as formatted_dob'),'book.id','book.user_name','book.zoom_email','book.zoom_number','book.additional_information','book.time_from','book.time_to','book.status_approve')
+            ->distinct()
+            ->whereDate('book.time_to','=',$date)
+            ->get(); //ดึงข้อมูลเฉพาะวันที่มีการจองและไม่ซ้ำกัน
         }
 
         return view('admin.booklists.index', compact('bookings'));

@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Hash;
 class User extends Authenticatable
 {
     use Notifiable;
-    protected $fillable = ['name', 'email','username', 'password', 'remember_token', 'role_id'];
+    protected $fillable = ['name','fullname','email','username', 'password', 'remember_token', 'role_id'];
     
     
     
